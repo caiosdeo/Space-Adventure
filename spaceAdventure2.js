@@ -35,10 +35,10 @@ var makeStars = function() {
 //TELA DE GAME OVER scene3
 var drawScene3 = function() {
 
-    tempoFinal = second();
+    tempoFinal = second() + minute() * 60;
 
     if (tempoFinal < tempoInicial){
-        tempoFinal += 60;
+        tempoFinal += 60*60;
     }
 
     tempoGameplay = tempoFinal - tempoInicial;
@@ -124,6 +124,8 @@ Mover.prototype.checkEdges = function() {
     else if (this.position.x < 0) {
         this.position.x = width;
         aux = 0;
+        this.position.y = random(0, height);
+
     }
 
     if (this.position.y > height) {
@@ -175,40 +177,31 @@ var drawScene2 = function() {
     text("Lifes: " + vidas, 20, 35);
 
 
-    var tempoAtual = second();
+    var tempoAtual = second() + minute() * 60;
 
     if (tempoAtual < tempoInicial){
-        tempoAtual += 60;
+        tempoAtual += 60*60;
     }
 
     if(bateu){
         asteroides = 1;
-        tempoColisao = second();
+        tempoColisao = tempoAtual;
         contadorColisao = 0;
         bateu = 0;
     }else{
 
-        if(atualizar){
-            contadorColisao += tempoAtual - tempoColisao;
-            atualizar = 0;
+        contadorColisao += tempoAtual - tempoColisao;
+        atualizar = 0;
 
-        }else{
-            auxAtualizar++;
-            if(auxAtualizar === 57){
-                atualizar = 1;
-
-                auxAtualizar = 0;
-            }
-        }
     }
 
     println(contadorColisao);
 
-    if(contadorColisao >= 10){
+    if(contadorColisao >= 5){
 
         asteroides = 2;
 
-        if(contadorColisao >= 20){
+        if(contadorColisao >= 10){
 
             asteroides = 3;
         }
@@ -238,7 +231,7 @@ mouseClicked = function() {
     if (currentScene === 1) {
         drawScene2();
         contadorColisao = 0;
-        tempoInicial = second();
+        tempoInicial = second() + minute() * 60;
         tempoColisao = tempoInicial;
         asteroides = 0;
         vidas = 5;
@@ -247,7 +240,7 @@ mouseClicked = function() {
     } else if (currentScene === 3) {
         drawScene2();
         contadorColisao = 0;
-        tempoInicial = second();
+        tempoInicial = second() + minute() * 60;
         tempoColisao = tempoInicial;
         asteroides = 0;
         vidas = 5;
