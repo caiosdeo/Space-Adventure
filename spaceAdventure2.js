@@ -1,4 +1,6 @@
-var aux = 0;
+var auxOneUp = 0;
+var auxAsteroide = 0;
+var auxPrimosaur = 0;
 var i = 0;
 var vidas = 0;
 
@@ -74,34 +76,151 @@ var drawScene3 = function() {
     text("Rank 2: " + ranking2 + " s", width/2 - 50, 70);
     text("Rank 3: " + ranking3 + " s", width/2 - 50, 105);
 };
-
 ///////////////////////////////////////
 /*
-* Objeto Mover
+*  Classe 1UP
 */
-var Mover = function() {
-  this.position = new PVector(random(width), random(height));
-  this.velocity = new PVector(random(-2, 2), 0);
-  // adicionando acelerando crescente mas constante ao objeto
-  this.acceleration = new PVector(-0.1, 0);
-  // limite de velocidade BOra no ifet quinta?
-  this.topspeed = 10;
+var OneUp = function() {
+    this.position = new PVector(width, random(height));
+    this.velocity = new PVector(-2, 0);
+
 };
 
-Mover.prototype.update = function() {
-    // adicionando a aceleração à velocidade que já temos
-    this.velocity.add(this.acceleration);
-    // respeitar o limite de velocidae
+OneUp.prototype.update = function() {
+
+    // agora move objeto
+    this.position.add(this.velocity);
+
+    if(this.position.x - mouseX <= 30 && this.position.y - mouseY <= 30 && this.position.x - mouseX >= -30 && this.position.y - mouseY >= -30 && auxOneUp === 0){
+        auxOneUp++;
+        vidas++;
+    }
+};
+OneUp.prototype.display = function() {
+    image(getImage("space/healthheart"), this.position.x, this.position.y, 30, 30);
+
+};
+
+OneUp.prototype.checkEdges = function() {
+
+    if (this.position.x > width) {
+        this.position.x = 0;
+        auxOneUp = 0;
+    }
+    else if (this.position.x < 0) {
+        this.position.x = width;
+        auxOneUp = 0;
+        this.position.y = random(0, height);
+
+    }
+
+    if (this.position.y > height) {
+        this.position.y = 0;
+    }
+    else if (this.position.y < 0) {
+        this.position.y = height;
+    }
+};
+
+/*
+    Classe PRIMOSAUR
+*/
+
+var Primosaur = function() {
+
+    this.position = new PVector(width, random(0,height));
+    this.velocity = new PVector(-4, random(-4, 4));
+    // adicionando acelerando crescente mas constante ao objeto
+    this.acceleration = new PVector(-0.1, 0);
+
+    // limite de velocidade
+    this.topspeed = 5;
+};
+
+Primosaur.prototype.display = function(){
+
+    image(getImage("avatars/primosaur-ultimate"), this.position.x, this.position.y, 70, 70);
+
+};
+
+Primosaur.prototype.checkEdges = function() {
+
+    if (this.position.x > width) {
+        this.velocity.x *= -1;
+        auxPrimosaur = 0;
+    }
+    else if (this.position.x < 0) {
+        this.velocity.x *= -1;
+        auxPrimosaur = 0;
+    }
+
+    if (this.position.y > height) {
+        this.velocity.y *= -1;
+        auxPrimosaur = 0;
+    }
+    else if (this.position.y < 0) {
+        this.velocity.y *= -1;
+        auxPrimosaur = 0;
+    }
+};
+
+Primosaur.prototype.update = function() {
+
+    // respeitar o limite de velocidade
     this.velocity.limit(this.topspeed);
     // agora move objeto
     this.position.add(this.velocity);
 
-    if(this.position.x - mouseX <= 30 && this.position.y - mouseY <= 30 && this.position.x - mouseX >= -30 && this.position.y - mouseY >= -30 && aux === 0){
-        aux++;
+    if(this.position.x - mouseX <= 30 && this.position.y - mouseY <= 30 && this.position.x - mouseX >= -30 && this.position.y - mouseY >= -30 && auxPrimosaur === 0){
+        auxPrimosaur++;
         bateu = 1;
         vidas--;
 
-        if( vidas === 0){
+        if(vidas === 0)
+        {
+            drawScene3();
+        }
+    }
+};
+
+
+var primosaur = new Primosaur();
+
+
+///////////////////////////////////////
+/*
+* Classe Mover
+*/
+var Mover = function() {
+    this.position = new PVector(width, random(height));
+    this.velocity = new PVector(-5, 0);
+    // adicionando acelerando crescente mas constante ao objeto
+    this.acceleration = new PVector(-0.1, 0);
+
+    // limite de velocidade
+    this.topspeed = 7;
+};
+
+Mover.prototype.update = function() {
+    // adicionando a aceleração à velocidade que já temos
+    if (asteroides > 1) {
+        this.velocity.add(this.acceleration);
+    }else {
+        this.velocity.add(0, 0);
+    }
+
+    // respeitar o limite de velocidade
+    this.velocity.limit(this.topspeed);
+    // agora move objeto
+    this.position.add(this.velocity);
+
+    if(this.position.x - mouseX <= 30 && this.position.y - mouseY <= 30 && this.position.x - mouseX >= -30 && this.position.y - mouseY >= -30 && auxAsteroide === 0){
+        auxAsteroide++;
+        bateu = 1;
+        vidas--;
+
+        if(vidas === 0){
+            asteroides = 0;
             drawScene3();
 
         }
@@ -119,11 +238,11 @@ Mover.prototype.checkEdges = function() {
 
     if (this.position.x > width) {
         this.position.x = 0;
-        aux = 0;
+        auxAsteroide = 0;
     }
     else if (this.position.x < 0) {
         this.position.x = width;
-        aux = 0;
+        auxAsteroide = 0;
         this.position.y = random(0, height);
 
     }
@@ -136,7 +255,9 @@ Mover.prototype.checkEdges = function() {
     }
 };
 
-var mover = [new Mover(), new Mover(), new Mover()];
+var asteroide = [new Mover(), new Mover(), new Mover()];
+
+
 ///////////////////////////////////////
 // Scene 1
 var drawScene1 = function() {
@@ -149,7 +270,7 @@ var drawScene1 = function() {
     text("Clique para começar", (width/2)-60, (height/2)+50);
 
 };
-
+var oneUp = new OneUp();
 // Scene 2
 var drawScene2 = function() {
     currentScene = 2;
@@ -165,18 +286,28 @@ var drawScene2 = function() {
     image(getImage("space/rocketship"), mouseX-30, mouseY-30, 60, 60);
 
     // crie ou chama uma função que desenhe e mova 1 objeto
-      mover[0].update();
-      mover[0].checkEdges();
-      mover[0].display();
 
-    // crie um função de aceleração do objeto
+    //asteroide 1 ---- Level 1
+    if (asteroides === 1) {
+        asteroide[0].update();
+        asteroide[0].checkEdges();
+        asteroide[0].display();
+    }
 
+    //Objeto para aumentar vida
 
+        oneUp.update();
+        oneUp.checkEdges();
+        oneUp.display();
+    //delete oneUp;
+
+    //HUD para número de vidas e o level
     textSize(20);
     fill(0,0,0);
     text("Lifes: " + vidas, 20, 35);
+    text("Level: " + asteroides, 300, 35);
 
-
+    //Variavel para comparação
     var tempoAtual = second() + minute() * 60;
 
     if (tempoAtual < tempoInicial){
@@ -188,21 +319,17 @@ var drawScene2 = function() {
         tempoColisao = tempoAtual;
         contadorColisao = 0;
         bateu = 0;
-    }else{
 
+    }else{
         contadorColisao += tempoAtual - tempoColisao;
         atualizar = 0;
 
     }
 
-    println(contadorColisao);
-
     if(contadorColisao >= 5){
-
         asteroides = 2;
 
         if(contadorColisao >= 10){
-
             asteroides = 3;
         }
 
@@ -210,15 +337,18 @@ var drawScene2 = function() {
 
     if(asteroides >= 2){
 
-        mover[1].update();
-        mover[1].checkEdges();
-        mover[1].display();
+        asteroide[1].update();
+        asteroide[1].checkEdges();
+        asteroide[1].display();
 
         if(asteroides === 3){
-            mover[2].update();
-            mover[2].checkEdges();
-            mover[2].display();
+            asteroide[2].update();
+            asteroide[2].checkEdges();
+            asteroide[2].display();
 
+            primosaur.display();
+            primosaur.update();
+            primosaur.checkEdges();
         }
 
     }
@@ -233,7 +363,7 @@ mouseClicked = function() {
         contadorColisao = 0;
         tempoInicial = second() + minute() * 60;
         tempoColisao = tempoInicial;
-        asteroides = 0;
+        asteroides = 1;
         vidas = 5;
     } else if (currentScene === 2) {
         drawScene3();
@@ -242,7 +372,7 @@ mouseClicked = function() {
         contadorColisao = 0;
         tempoInicial = second() + minute() * 60;
         tempoColisao = tempoInicial;
-        asteroides = 0;
+        asteroides = 1;
         vidas = 5;
 
     }
