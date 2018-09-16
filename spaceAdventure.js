@@ -1,14 +1,15 @@
+//Variaveis para auxiliar no deslocamento
 var auxOneUp = 0;
 var auxAsteroide = 0;
 var auxPrimosaur = 0;
 var auxStar = 0;
-var i = 0;
-var vidas = 0;
 
+//Variaveis para ranking de tempos
 var ranking1 = 0;
 var ranking2 = 0;
 var ranking3 = 0;
 
+//Variaveis para verificar a variação de tempos
 var tempoGameplay;
 var tempoInicial;
 var tempoAtual;
@@ -18,6 +19,8 @@ var tempoFinal;
 var tempoStar;
 var tempoSlow;
 
+//Variaveis para determinar objetos especiais no jogo
+var vidas = 0;
 var slow = 0;
 var asteroides = 1;
 
@@ -203,7 +206,7 @@ var Primosaur = function() {
 
 Primosaur.prototype.display = function(){
 
-    image(getImage("avatars/starky-sapling"), this.position.x, this.position.y, 100, 100);
+    image(getImage("avatars/duskpin-ultimate"), this.position.x, this.position.y, 100, 100);
 
 };
 
@@ -347,8 +350,6 @@ Mover.prototype.checkEdges = function() {
 
 var asteroide = [new Mover(), new Mover(), new Mover()];
 
-
-
 ///////////////////////////////////////
 // Scene 1
 var drawScene1 = function() {
@@ -384,10 +385,13 @@ var drawScene2 = function() {
     //Variavel para comparação
     tempoAtual = second() + minute() * 60;
 
+    ////////<DELTAT>
+    //Variações do tempo para os objetos do jogo
     if (tempoAtual < tempoInicial){
         tempoAtual += 60*60;
     }
 
+    //tempo para o 1up aparecer
     if(tempoAtual - tempoOneUp >= 120){
         //Objeto para aumentar vida
         oneUp.update();
@@ -395,6 +399,7 @@ var drawScene2 = function() {
         oneUp.display();
     }
 
+    //tempo para estrela aparecer
     if(tempoAtual - tempoStar >= 30){
         //Objeto para diminuir a velocidade dos demais
         star.update();
@@ -402,15 +407,19 @@ var drawScene2 = function() {
         star.display();
     }
 
+    //tempo para o nivel 2
     if(tempoAtual - tempoColisao >= 30){
         asteroides = 2;
 
+        //tempo para o nivel 3
         if(tempoAtual - tempoColisao >= 60){
             asteroides = 3;
         }
 
     }
+    //////////</DELTAT>
 
+    //
     if(tempoAtual - tempoSlow <= 3)
     {
         slow = 1;
@@ -422,7 +431,6 @@ var drawScene2 = function() {
 
     //Niveis de Jogo
     //asteroide 1 ---- Level 1
-
     if (asteroides >= 1) {
         asteroide[0].display();
         asteroide[0].update();
@@ -440,6 +448,7 @@ var drawScene2 = function() {
                 asteroide[2].update();
                 asteroide[2].checkEdges();
 
+                //bouncing
                 primosaur.display();
                 primosaur.update();
                 primosaur.checkEdges();
